@@ -1,4 +1,4 @@
-package dev.wand.sql;
+package dev.wand.data.sql;
 
 import lombok.Getter;
 

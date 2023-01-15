@@ -44,18 +44,28 @@ public class PromoteCommand extends SlashCommand {
         Role role = slashCommandEvent.optRole("role");
 
         //get current highest role
-        Role highestRole = BotMain.getGuild().getMemberById(user.getId()).getRoles().get(0);
+        Role highestRole = RoleUtil.getHighestRoleInHierarchy(user);
 
         // If the role is null, promote to the next role in the hierarchy.
         if (role == null) { //if no role is specified, PROMOTE TO NEXT ROLE
             try {
                 Role nextRole = RoleUtil.getNextRoleInHierarchy(user);
                 if (nextRole == null) {
-                    slashCommandEvent.reply("Something went wrong.").setEphemeral(true).queue();
+                    slashCommandEvent.reply("Something went wrong. Does that user have a role in the hierarchy?").setEphemeral(true).queue();
                     return;
                 }
                 BotMain.getGuild().addRoleToMember(UserSnowflake.fromId(user.getId()), nextRole).queue();
                 slashCommandEvent.reply("Promoted user to " + nextRole.getName() + ".").setEphemeral(true).queue();
+
+                BotMain.getSQLManager().createStaffLog(
+                        slashCommandEvent.getMember().getId(),
+                        user.getId(),
+                        "Promotion",
+                        highestRole.getName(),
+                        nextRole.getName(),
+                        System.currentTimeMillis(),
+                        reason
+                );
                 return;
             } catch (IndexOutOfBoundsException e) {
                 slashCommandEvent.reply("User is already at the highest role.").setEphemeral(true).queue();

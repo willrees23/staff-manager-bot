@@ -1,5 +1,5 @@
 
-package dev.wand.sql;
+package dev.wand.data.sql;
 
 import dev.wand.BotMain;
 
@@ -32,7 +32,21 @@ public class SQLManager {
     }
 
     public void initOtherLogs() {
-
+        PreparedStatement ps;
+        try {
+            // table: id, performerId, punishment, reason, proof, datetime
+            ps = BotMain.getSQL().getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS otherlogs " +
+                    "(id INT NOT NULL AUTO_INCREMENT, " +
+                    "performerId VARCHAR(255), " +
+                    "punishment VARCHAR(255), " +
+                    "reason VARCHAR(255), " +
+                    "proof VARCHAR(255), " +
+                    "dateTime BIGINT(255), " +
+                    "PRIMARY KEY (id))");
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void createStaffLog(String performerId, String recipientId, String action, String oldRoleName, String newRoleName, long dateTime, String reason) {

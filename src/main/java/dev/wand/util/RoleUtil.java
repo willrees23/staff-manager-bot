@@ -21,6 +21,19 @@ public class RoleUtil {
 
         Collections.reverse(list); //reverse the list so that the highest role is at the top
 
+        Role role = getHighestRoleInHierarchy(user); //get the highest role in the hierarchy
+
+        Role nextRole = BotMain.getGuild().getRoleById(list.get(list.indexOf(role.getId()) + 1));
+        return nextRole;
+    }
+
+    public static Role getHighestRoleInHierarchy(User user) {
+        List<String> list = ConfigYaml.get().getStringList("role-hierarchy"); //get the role hierarchy from the config
+        ArrayList<Role> roles = new ArrayList<>();
+        roles.addAll(BotMain.getGuild().getMemberById(user.getId()).getRoles()); //user roles
+
+        Collections.reverse(list); //reverse the list so that the highest role is at the top
+
         Role role = null;
         for (String s : list) {
             for (Role r : roles) {
@@ -35,7 +48,7 @@ public class RoleUtil {
             return null;
         }
 
-        Role nextRole = BotMain.getGuild().getRoleById(list.get(list.indexOf(role.getId()) + 1));
+        Role nextRole = BotMain.getGuild().getRoleById(list.get(list.indexOf(role.getId())));
         return nextRole;
     }
 }
